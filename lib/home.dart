@@ -16,24 +16,25 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> todoList = [];
 
-  void loadData()async{
+  void loadData() async {
     final SharedPreferences _prefs = await SharedPreferences.getInstance();
     final data = await _prefs.getString("todo");
-    if(data!=null){
-      final converted = (json.decode(data) as List<dynamic>).cast<Map<String,dynamic>>();
+    if (data != null) {
+      final converted =
+          (json.decode(data) as List<dynamic>).cast<Map<String, dynamic>>();
       setState(() {
         todoList = converted;
       });
     }
   }
 
-  void saveData()async{
+  void saveData() async {
     final SharedPreferences _prefs = await SharedPreferences.getInstance();
     final converted = jsonEncode(todoList);
     _prefs.setString("todo", converted);
   }
 
-  void deleteData(int index){
+  void deleteData(int index) {
     setState(() {
       todoList.removeAt(index);
     });
@@ -43,8 +44,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
     loadData();
+    super.initState();
   }
 
   @override
@@ -57,25 +58,29 @@ class _HomePageState extends State<HomePage> {
         child: Icon(
           Icons.add,
           color: CupertinoColors.white,
-          size: 40,),
-          onPressed: ()async{
-            final result = await Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) {
-              return AddPage();
-            }));
-            if(result!=null){
-              setState(() {
-                todoList.add(result);
-              });
-              saveData();
-              print(todoList);
-            }
-          },),
+          size: 40,
+        ),
+        onPressed: () async {
+          final result = await Navigator.push(context,
+              MaterialPageRoute(builder: (BuildContext context) {
+            return AddPage();
+          }));
+          if (result != null) {
+            setState(() {
+              todoList.add(result);
+            });
+            saveData();
+            print(todoList);
+          }
+        },
+      ),
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.grey[900],
-        title: Text("To Do App", style: GoogleFonts.lobster(
-          color: Colors.lightGreenAccent
-        ),),
+        title: Text(
+          "To Do App",
+          style: GoogleFonts.lobster(color: Colors.lightGreenAccent),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
@@ -83,38 +88,41 @@ class _HomePageState extends State<HomePage> {
           itemCount: todoList.length,
           itemBuilder: (BuildContext context, int index) {
             return Card(
-              color: todoList[index]["completed"]==false?CupertinoColors.white:CupertinoColors.systemGreen,
+              color: todoList[index]["completed"] == false
+                  ? CupertinoColors.white
+                  : CupertinoColors.systemGreen,
               child: ListTile(
+                trailing: Text("${todoList[index]["category"]}"),
                 leading: Container(
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.blueGrey[900],
-                    shape: BoxShape.circle
+                      color: Colors.blueGrey[900], shape: BoxShape.circle),
+                  child: Text(
+                    "${index + 1}",
+                    style: GoogleFonts.lobster(
+                        color: CupertinoColors.white, fontSize: 20),
                   ),
-                  child: Text("${index}", style: GoogleFonts.lobster(
-                    color: CupertinoColors.white,
-                    fontSize: 20
-                  ),),
                 ),
-                onTap: ()async{
-                  final result = await Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-                    return DetailPage(task: todoList[index], index: index,);
+                onTap: () async {
+                  final result = await Navigator.push(context,
+                      MaterialPageRoute(builder: (BuildContext context) {
+                    return DetailPage(
+                      task: todoList[index],
+                      index: index,
+                    );
                   }));
-                  if(result!=null){
-                    if(result==true){
+                  if (result != null) {
+                    if (result == true) {
                       print(result);
                       setState(() {
-                        todoList[index]["completed"]=true;
+                        todoList[index]["completed"] = true;
                       });
-                    }
-                    else if(result==false){
+                    } else if (result == false) {
                       print(result);
                       setState(() {
-                        todoList[index]["completed"]=false;
-
+                        todoList[index]["completed"] = false;
                       });
-                    }
-                    else{
+                    } else {
                       setState(() {
                         deleteData(index);
                       });
@@ -124,9 +132,9 @@ class _HomePageState extends State<HomePage> {
                 title: Text("${todoList[index]["name"]}"),
               ),
             );
-          },),
+          },
+        ),
       ),
-
     );
   }
 }
